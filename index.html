@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Editor and Compiler</title>
+    <title>Interactive Code Editor</title>
 
     <!-- Google Fonts for better typography -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -102,6 +102,16 @@
         .theme-toggle:hover {
             background-color: #ccc;
         }
+
+        select {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            background-color: #fff;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -110,7 +120,7 @@
         
         <!-- Editor and Output -->
         <div class="editor-container">
-            <div id="code-editor"></div>
+            <div id="code-editor"></div> <!-- Monaco Editor container -->
             <div id="output-container">
                 <iframe id="output" sandbox="allow-scripts"></iframe>
             </div>
@@ -118,6 +128,12 @@
 
         <!-- Control Buttons -->
         <div class="controls">
+            <select id="language-select">
+                <option value="html">HTML</option>
+                <option value="javascript">JavaScript</option>
+                <option value="css">CSS</option>
+                <option value="python">Python</option> <!-- Add more languages as needed -->
+            </select>
             <button id="run">Run Code</button>
             <div class="theme-toggle" id="theme-toggle">☀️</div>
         </div>
@@ -127,13 +143,14 @@
     <script>
         let editor;
         let currentTheme = 'vs-dark'; // Default to dark mode
+        let currentLanguage = 'html'; // Default language
 
         // Load Monaco Editor
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' } });
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('code-editor'), {
                 value: "<!DOCTYPE html>\n<html lang='en'>\n<head>\n    <meta charset='UTF-8'>\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n    <title>Document</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>",
-                language: 'html',
+                language: currentLanguage,
                 theme: currentTheme,
                 automaticLayout: true
             });
@@ -157,6 +174,22 @@
             }
             monaco.editor.setTheme(currentTheme);
         };
+
+        // Language selection functionality
+        document.getElementById('language-select').addEventListener('change', function() {
+            currentLanguage = this.value;
+            monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+            editor.setValue(''); // Clear editor for a fresh start (optional)
+            if (currentLanguage === 'html') {
+                editor.setValue("<!DOCTYPE html>\n<html lang='en'>\n<head>\n    <meta charset='UTF-8'>\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n    <title>Document</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>");
+            } else if (currentLanguage === 'javascript') {
+                editor.setValue("// Write your JavaScript code here\n");
+            } else if (currentLanguage === 'css') {
+                editor.setValue("/* Write your CSS code here */\n");
+            } else if (currentLanguage === 'python') {
+                editor.setValue("# Write your Python code here\n");
+            }
+        });
     </script>
 </body>
 </html>
