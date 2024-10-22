@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor - Course</title>
+
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #282c34;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+        }
+
+        .editor-container {
+            display: flex;
+            width: 90%;
+            height: 70%;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #code-editor {
+            width: 50%;
+            height: 100%;
+            border-right: 2px solid #333;
+        }
+
+        #output-container {
+            width: 50%;
+            height: 100%;
+            background-color: #1e1e1e;
+        }
+
+        #output {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #21a1f1;
+        }
+
+        .theme-toggle {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            color: #000;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="course-title">Code Editor - Course</h1>
+        
+        <!-- Editor and Output -->
+        <div class="editor-container">
+            <div id="code-editor"></div> <!-- Monaco Editor container -->
+            <div id="output-container">
+                <iframe id="output" sandbox="allow-scripts"></iframe>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="controls">
+            <button id="run">Run Code</button>
+            <div class="theme-toggle" id="theme-toggle">☀️</div>
+        </div>
+    </div>
+
+    <!-- Monaco Editor Initialization Script -->
+    <script>
+        let editor;
+        let currentTheme = 'vs-dark'; // Default to dark mode
+        let currentLanguage = 'html'; // Default language
+
+        // Get language from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        currentLanguage = urlParams.get('language') || 'html';
+
+        // Load Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' } });
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('code-editor'), {
+                value: currentLanguage === 'html' ? "<!DOCTYPE html>\n<html lang='en'>\n<head>\n    <meta charset='UTF-8'>\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n    <title>Document</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>" : 
+                        currentLanguage === 'javascript' ? "// Write your JavaScript code here\n" : 
+                        currentLanguage === 'css' ? "/* Write your CSS code here */\n" : 
+                        currentLanguage === 'python' ? "# Write your Python code here\n" : "",
+                language: currentLanguage,
+                theme: currentTheme,
+                automaticLayout: true
+            });
+        });
+
+        // Function to run the code
+        document.getElementById('run').onclick = function() {
+            const code = editor.getValue();
+            const iframe = document.getElementById('output');
+            iframe.srcdoc = code; // Inject code into iframe
+        };
+
+        // Theme toggle functionality
+        document.getElementById('theme-toggle').onclick = function() {
+            if (currentTheme === 'vs-dark') {
+                currentTheme = 'vs-light';
+                this.textContent = '🌙';
+            } else {
+                currentTheme = 'vs-dark';
+                this.textContent = '☀️';
+            }
+            monaco.editor.setTheme(currentTheme);
+        };
+    </script>
+</body>
+</html>
