@@ -128,11 +128,11 @@
         let editor;
         let currentTheme = 'vs-dark'; // Default to dark mode
         let currentLanguage = 'html'; // Default language
-
+    
         // Get language from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         currentLanguage = urlParams.get('language') || 'html';
-
+    
         // Load Monaco Editor
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' } });
         require(['vs/editor/editor.main'], function() {
@@ -146,14 +146,38 @@
                 automaticLayout: true
             });
         });
-
+    
         // Function to run the code
         document.getElementById('run').onclick = function() {
             const code = editor.getValue();
             const iframe = document.getElementById('output');
-            iframe.srcdoc = code; // Inject code into iframe
+            
+            // Clear previous output
+            iframe.srcdoc = "";
+    
+            try {
+                if (currentLanguage === 'html') {
+                    iframe.srcdoc = code; // Directly inject HTML
+                } else if (currentLanguage === 'javascript') {
+                    // Create a new blob for JavaScript code
+                    const blob = new Blob([code], { type: 'text/javascript' });
+                    const url = URL.createObjectURL(blob);
+                    const scriptTag = `<script src="${url}"><\/script>`;
+                    iframe.srcdoc = `<html><body>${scriptTag}</body></html>`;
+                } else if (currentLanguage === 'css') {
+                    const blob = new Blob([code], { type: 'text/css' });
+                    const url = URL.createObjectURL(blob);
+                    iframe.srcdoc = `<html><head><link rel="stylesheet" href="${url}"></head><body><h1>CSS Output</h1></body></html>`;
+                } else if (currentLanguage === 'python') {
+                    // Python execution is more complex and requires a backend or additional library
+                    alert("Running Python code requires server-side execution.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred: " + error.message);
+            }
         };
-
+    
         // Theme toggle functionality
         document.getElementById('theme-toggle').onclick = function() {
             if (currentTheme === 'vs-dark') {
@@ -166,5 +190,6 @@
             monaco.editor.setTheme(currentTheme);
         };
     </script>
+    
 </body>
 </html>
