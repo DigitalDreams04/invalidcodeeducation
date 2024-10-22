@@ -157,19 +157,20 @@
     
             try {
                 if (currentLanguage === 'html') {
-                    iframe.srcdoc = code; // Directly inject HTML
+                    // Directly inject HTML code into the iframe
+                    iframe.srcdoc = code; 
                 } else if (currentLanguage === 'javascript') {
                     // Create a new blob for JavaScript code
                     const blob = new Blob([code], { type: 'text/javascript' });
                     const url = URL.createObjectURL(blob);
-                    const scriptTag = `<script src="${url}"><\/script>`;
+                    const scriptTag = `<script src="${url}"></script>`;
                     iframe.srcdoc = `<html><body>${scriptTag}</body></html>`;
                 } else if (currentLanguage === 'css') {
+                    // Create a new blob for CSS code
                     const blob = new Blob([code], { type: 'text/css' });
                     const url = URL.createObjectURL(blob);
                     iframe.srcdoc = `<html><head><link rel="stylesheet" href="${url}"></head><body><h1>CSS Output</h1></body></html>`;
                 } else if (currentLanguage === 'python') {
-                    // Python execution is more complex and requires a backend or additional library
                     alert("Running Python code requires server-side execution.");
                 }
             } catch (error) {
@@ -190,6 +191,8 @@
             monaco.editor.setTheme(currentTheme);
         };
     </script>
+    
+    
     
 </body>
 </html>
